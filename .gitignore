@@ -1,0 +1,20 @@
+
+# CMake generated files
+/build/
+cmake-build-*/
+
+# Compiled executables and objects
+*.exe
+*.o
+*.obj
+*.dll
+
+# Generated virtual disks
+*.bin
+
+# VS Code local settings
+.vscode/
+
+# Temporary files
+*.tmp
+*.log
