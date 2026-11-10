@@ -1,41 +1,22 @@
-
 cmake_minimum_required(VERSION 3.16)
-
-project(VaultFS VERSION 1.0 LANGUAGES CXX)
-
+project(VaultFS VERSION 1.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
 enable_testing()
 
-add_executable(vaultfs
-    src/main.cpp
-    src/VirtualDisk.cpp
-)
-target_include_directories(vaultfs PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
+add_library(vaultfs_core src/VirtualDisk.cpp src/FileSystem.cpp)
+target_include_directories(vaultfs_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if(MSVC)
-    target_compile_options(vaultfs PRIVATE /W4)
+  target_compile_options(vaultfs_core PRIVATE /W4)
 else()
-    target_compile_options(vaultfs PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(vaultfs_core PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-add_executable(test_virtual_disk
-    tests/test_virtual_disk.cpp
-    src/VirtualDisk.cpp
-)
-target_include_directories(test_virtual_disk PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-if(MSVC)
-    target_compile_options(test_virtual_disk PRIVATE /W4)
-else()
-    target_compile_options(test_virtual_disk PRIVATE -Wall -Wextra -Wpedantic)
-endif()
-
-add_test(
-    NAME VirtualDiskTest
-    COMMAND $<TARGET_FILE:test_virtual_disk>
-)
+add_executable(vaultfs src/main.cpp)
+target_link_libraries(vaultfs PRIVATE vaultfs_core)
+add_executable(test_virtual_disk tests/test_virtual_disk.cpp)
+target_link_libraries(test_virtual_disk PRIVATE vaultfs_core)
+add_test(NAME VirtualDiskTest COMMAND $<TARGET_FILE:test_virtual_disk>)
+add_executable(test_file_system tests/test_file_system.cpp)
+target_link_libraries(test_file_system PRIVATE vaultfs_core)
+add_test(NAME FileSystemTest COMMAND $<TARGET_FILE:test_file_system>)
