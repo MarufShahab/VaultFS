@@ -32,12 +32,69 @@ cmake --build build
 
 ## Run
 
+After building the project on Windows, launch the VaultFS Phase 3 command-line interface:
+
 ```powershell
-.\build\vaultfs.exe
+.\build\vaultfs.exe demo_phase3.bin
 ```
 
-The main executable currently provides an initial welcome and startup message. Full filesystem operations are not yet integrated.
+VaultFS creates a new filesystem if the specified virtual disk does not exist. If the disk already exists and contains a valid Phase 3 filesystem, VaultFS mounts it without formatting or overwriting existing data.
 
+### Available CLI Commands
+
+| Command | Description |
+|---|---|
+| `help` | Display available commands |
+| `ls` | List files |
+| `touch <name>` | Create an empty file |
+| `write <name> <text>` | Write text to a file |
+| `cat <name>` | Read file contents |
+| `rm <name>` | Delete a file |
+| `stat <name>` | Display file size |
+| `df` | Display free data blocks and inodes |
+| `exit` | Close the application |
+
+### Example
+
+```text
+touch hello.txt
+write hello.txt Hello from VaultFS!
+cat hello.txt
+ls
+df
+exit
+```
+
+To verify persistence, restart VaultFS using the same disk file:
+
+```powershell
+.\build\vaultfs.exe demo_phase3.bin
+```
+
+Then execute:
+
+```text
+cat hello.txt
+```
+
+Expected output:
+
+```text
+Hello from VaultFS!
+```
+
+### Automated Testing
+
+Run both Phase 2 and Phase 3 tests:
+
+```powershell
+cmake --build build
+ctest --test-dir build -V
+```
+
+On 10 November 2026, both registered automated tests passed on the Windows development environment (2/2).
+
+**Note:** Phase 3 provides a single-disk inode-based filesystem. Three-disk replication, CRC32 corruption detection and automatic replica recovery remain future development tasks.
 ## Phase 2: VirtualDisk Layer
 
 The VirtualDisk module provides fixed-size virtual disk storage backed by binary files.
