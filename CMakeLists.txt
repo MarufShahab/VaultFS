@@ -7,8 +7,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+enable_testing()
+
 add_executable(vaultfs
     src/main.cpp
+    src/VirtualDisk.cpp
+)
+target_include_directories(vaultfs PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 if(MSVC)
@@ -16,3 +22,20 @@ if(MSVC)
 else()
     target_compile_options(vaultfs PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+add_executable(test_virtual_disk
+    tests/test_virtual_disk.cpp
+    src/VirtualDisk.cpp
+)
+target_include_directories(test_virtual_disk PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+if(MSVC)
+    target_compile_options(test_virtual_disk PRIVATE /W4)
+else()
+    target_compile_options(test_virtual_disk PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+add_test(
+    NAME VirtualDiskTest
+    COMMAND $<TARGET_FILE:test_virtual_disk>
+)
